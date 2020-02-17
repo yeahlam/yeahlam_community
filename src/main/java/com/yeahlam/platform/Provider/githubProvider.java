@@ -30,7 +30,7 @@ public class githubProvider {
 
     public githubUserDTO getUserByToken(String token) {
         OkHttpClient client = new OkHttpClient();
-        if (token == "") {
+        if (token == "" || "bad_verification_code".equals(token)) {
             return null;
         }
         Request request = new Request.Builder()

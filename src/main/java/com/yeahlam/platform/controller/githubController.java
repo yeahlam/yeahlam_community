@@ -5,9 +5,12 @@ import com.yeahlam.platform.DTO.githubUserDTO;
 import com.yeahlam.platform.Provider.githubProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpSession;
 
 @Controller
 public class githubController {
@@ -19,7 +22,7 @@ public class githubController {
     githubProvider githubProvider;
     @GetMapping("/callback")
 
-    public String githubCallback(@RequestParam String code,@RequestParam String state){
+    public String githubCallback(@RequestParam String code, @RequestParam String state, HttpSession session){
         accessTokenDTO accessTokenDTO = new accessTokenDTO();
         accessTokenDTO.setClient_id(Client_id);
         accessTokenDTO.setClient_secret(Client_secret);
@@ -29,7 +32,8 @@ public class githubController {
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         System.out.println(accessToken);
         githubUserDTO user = githubProvider.getUserByToken(accessToken);
+        session.setAttribute("user",user);
         System.out.println(user);
-        return "index";
+        return "redirect:/";
     }
 }

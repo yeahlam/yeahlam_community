@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
@@ -27,10 +29,10 @@ public class githubController {
     githubProvider githubProvider;
 
     @Autowired
-    private userMapper userMapper;
+    userMapper userMapper;
 
     @GetMapping("/callback")
-    public String githubCallback(@RequestParam String code, @RequestParam String state, HttpSession session) {
+    public String githubCallback(@RequestParam String code, @RequestParam String state, HttpSession session, HttpServletResponse response) {
         accessTokenDTO accessTokenDTO = new accessTokenDTO();
         accessTokenDTO.setClient_id(Client_id);
         accessTokenDTO.setClient_secret(Client_secret);
@@ -52,7 +54,8 @@ public class githubController {
             localuser.setGm_modified(localuser.getGmt_create());
 
             userMapper.insert(localuser);
-            session.setAttribute("user", userDTO);
+            response.addCookie(new Cookie("token",localuser.getToken()));
+
             return "redirect:/";
         } else {
             return "redirect:/";
